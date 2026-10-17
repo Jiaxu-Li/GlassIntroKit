@@ -1,0 +1,16 @@
+.DS_Store
+._*
+.build/
+/Packages
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+DerivedData/
+.swiftpm/configuration/
+.swiftpm/security/
+.swiftpm/cache/
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+*.xcresult
+*.dSYM/
+*.log

@@ -1,0 +1,25 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Continue": {
+
+    },
+    "Get Started": {
+
+    },
+    "Let's Begin": {
+
+    },
+    "Page %lld of %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Page %1$lld of %2$lld"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

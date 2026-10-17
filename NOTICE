@@ -1,0 +1,35 @@
+GlassIntroKit
+Copyright (c) 2026 Jiaxu Li
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full text.
+
+Original works
+--------------
+The following are the author's own works and are included under the same
+license:
+
+  - The "hello" handwriting stroke.
+  - The default mark design.
+
+Not licensed for reuse
+----------------------
+The forest picture in the demo app (Examples/GlassIntroDemo, Forest.imageset)
+was rendered with another, independent project of the author. It is not
+covered by the Apache License. It is included only so the demo runs, and no
+permission is given to use it anywhere else.
+
+SF Symbols
+----------
+SF Symbols are Apple's and are subject to Apple's terms. GlassIntroKit uses
+them through the system and does not redistribute them.
+
+Device frames
+-------------
+The iPhone and MacBook Pro frames around the screenshots and videos in the
+documentation come from Apple Design Resources (developer.apple.com/design/
+resources). They are Apple's and are used under Apple's license. The frame
+files themselves are not included in this repository.
+
+Apple, iPhone, MacBook Pro, and macOS are trademarks of Apple Inc.,
+registered in the U.S. and other countries and regions.

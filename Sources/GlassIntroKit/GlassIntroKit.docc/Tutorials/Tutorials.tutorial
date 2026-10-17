@@ -1,0 +1,31 @@
+@Tutorials(name: "GlassIntroKit") {
+    @Intro(title: "Meet GlassIntroKit") {
+        Give your app a first-launch intro in Liquid Glass: your mark, a welcome that tells your app's story a page at a time, and an ending in your own words.
+
+        @Video(source: "intro.mp4", poster: "screenshot-greeting.png")
+    }
+
+    @Chapter(name: "Essentials") {
+        Add an intro to an app, tell its story with pages, and make the ending your own.
+
+        @Image(source: "diagram-flow.png", alt: "The intro from launch to app: the launch, the welcome, and the ending, then your app.")
+
+        @TutorialReference(tutorial: "doc:AddingAnIntro")
+    }
+
+    @Resources {
+        Learn more about each part of the intro.
+
+        @Documentation(destination: "https://github.com/Jiaxu-Li/GlassIntroKit") {
+            The repository, with the demo app that tries every option.
+
+            - [README](https://github.com/Jiaxu-Li/GlassIntroKit#readme)
+        }
+
+        @SampleCode(destination: "https://github.com/Jiaxu-Li/GlassIntroKit/tree/main/Examples/GlassIntroDemo") {
+            The demo app opens on a settings screen and writes out the code for the intro you set up.
+
+            - [GlassIntroDemo](https://github.com/Jiaxu-Li/GlassIntroKit/tree/main/Examples/GlassIntroDemo)
+        }
+    }
+}

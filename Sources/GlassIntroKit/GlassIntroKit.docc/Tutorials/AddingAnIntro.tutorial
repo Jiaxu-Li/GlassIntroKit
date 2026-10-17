@@ -1,0 +1,115 @@
+@Tutorial(time: 15) {
+    @Intro(title: "Adding an Intro to Your App") {
+        Add GlassIntroKit to an app, give it a welcome of several pages, choose the words of its ending, and play it again from a button.
+
+        @Image(source: "diagram-story.jpg", alt: "Five screens of the intro: the mark on frosted glass, hello written in glass, the mark in glass, scattered symbols, and a lit cube.")
+    }
+
+    @Section(title: "Add an intro") {
+        @ContentAndMedia {
+            An intro is one modifier on your window's root view. With just your app's name and one page, it plays the launch and a welcome of one page.
+
+            @Image(source: "screenshot-launch.png", alt: "The mark, a white pearl with a yellow light, on frosted glass.")
+        }
+
+        @Steps {
+            @Step {
+                Add GlassIntroKit to your app. In Xcode, choose File › Add Package Dependencies and enter the repository URL. In a package, add it to the dependencies.
+
+                @Code(name: "Package.swift", file: "tutorial-package.swift")
+            }
+
+            @Step {
+                In your app's main file, import GlassIntroKit.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-01.swift")
+            }
+
+            @Step {
+                Add the `glassIntro(appName:mark:pages:finale:)` modifier to the root view, with your app's name and a greeting page.
+
+                The launch plays once per process, and the welcome plays on the first launch.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-02.swift") {
+                    @Image(source: "screenshot-greeting.png", alt: "The greeting page: hello written in glass, with a title, a message, and Continue.")
+                }
+            }
+        }
+    }
+
+    @Section(title: "Tell your story with pages") {
+        @ContentAndMedia {
+            Pages come in any order. Pictures made to follow one another carry straight on; any other two meet in a drop of glass.
+
+            @Image(source: "diagram-transitions.png", alt: "Pages carrying straight on, meeting in a drop of glass, and letting go before the last page.")
+        }
+
+        @Steps {
+            @Step {
+                Add a mark page, and a symbols page with symbols for your app.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-03.swift") {
+                    @Image(source: "screenshot-symbols.png", alt: "Glass symbols scattered around the mark.")
+                }
+            }
+
+            @Step {
+                Add a scene page. Choose its shape, colour, and motion with `GlassIntroScene`.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-04.swift") {
+                    @Image(source: "screenshot-scene.png", alt: "A lit cube on a studio floor.")
+                }
+            }
+
+            @Step {
+                Add a graph of your own nodes, and a physics page: right after a graph, the graph's own nodes fall.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-05.swift") {
+                    @Image(source: "screenshot-physics.png", alt: "Glass nodes resting on a line.")
+                }
+            }
+        }
+    }
+
+    @Section(title: "Make the ending your own") {
+        @ContentAndMedia {
+            The last page asks to begin. Its button plays the ending: a few words in glass, then the mark fills with colour and dissolves over your app.
+
+            @Image(source: "diagram-ending.jpg", alt: "The last page, a word in glass, the mark in colour, and the app.")
+        }
+
+        @Steps {
+            @Step {
+                Add an icon page, and choose the words of the ending with `finale`. Pass an empty array for no words.
+
+                @Code(name: "OrbitApp.swift", file: "tutorial-app-06.swift") {
+                    @Image(source: "screenshot-ending.png", alt: "A word of the ending in glass on blue light.")
+                }
+            }
+        }
+    }
+
+    @Section(title: "Play it again") {
+        @ContentAndMedia {
+            Let people see the intro again whenever they ask, with a binding.
+
+            @Image(source: "screenshot-app.png", alt: "The app after the intro.")
+        }
+
+        @Steps {
+            @Step {
+                Start from your content view.
+
+                @Code(name: "ContentView.swift", file: "tutorial-content-01.swift")
+            }
+
+            @Step {
+                Add a Boolean state and a button that sets it, and give the view `glassIntro(_:isPresented:)`. The intro plays when the binding becomes true, and sets it back to false when it ends.
+
+                @Code(name: "ContentView.swift", file: "tutorial-content-02.swift") {
+                    @Image(source: "screenshot-colour.png", alt: "The mark filling with colour at the end of the intro.")
+                }
+            }
+        }
+    }
+}
