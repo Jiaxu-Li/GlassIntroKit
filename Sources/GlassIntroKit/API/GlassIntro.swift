@@ -70,6 +70,11 @@ public struct GlassIntro {
     public var startButton: Text
     /// The button on every other page, unless the page has its own.
     public var continueButton: Text
+    /// Whether a Skip button shows in the corner while the welcome plays.
+    /// Skipping counts as seeing the welcome. On a Mac, Escape skips too.
+    public var showsSkipButton: Bool
+    /// The Skip button's label.
+    public var skipButton: Text
     /// The opening stage's colour, with `opening: .stage`.
     public var tint: Color
     /// What the window shows behind the launch, before the app appears.
@@ -98,6 +103,9 @@ public struct GlassIntro {
     ///   - startButton: The last page's button; by default "Get Started".
     ///   - continueButton: The button on every other page; by default
     ///     "Continue". A page can have its own.
+    ///   - showsSkipButton: Whether a Skip button shows while the welcome
+    ///     plays; by default it does.
+    ///   - skipButton: The Skip button's label; by default "Skip".
     ///   - tint: The opening stage's colour, with `opening: .stage`.
     ///   - background: What the window shows behind the launch.
     ///   - welcome: When the welcome plays at launch.
@@ -113,6 +121,8 @@ public struct GlassIntro {
         startTitle: Text? = nil,
         startButton: Text? = nil,
         continueButton: Text? = nil,
+        showsSkipButton: Bool = true,
+        skipButton: Text? = nil,
         tint: Color = .accentColor,
         background: Color = GlassIntro.defaultBackground,
         welcome: WelcomeSchedule = .firstLaunchOnly,
@@ -127,6 +137,8 @@ public struct GlassIntro {
         self.startTitle = startTitle ?? Text("Let's Begin", bundle: .module)
         self.startButton = startButton ?? Text("Get Started", bundle: .module)
         self.continueButton = continueButton ?? Text("Continue", bundle: .module)
+        self.showsSkipButton = showsSkipButton
+        self.skipButton = skipButton ?? Text("Skip", bundle: .module)
         self.tint = tint
         self.background = background
         self.welcome = welcome

@@ -14,6 +14,8 @@ import SwiftUI
 /// A page's text: one title, one message, and the button that turns the
 /// page.
 struct WelcomePageText: View {
+    @Environment(\.accessibilityReduceTransparency) private var reducesTransparency
+
     let page: GlassIntroPage
     let index: Int
     let pageCount: Int
@@ -44,7 +46,7 @@ struct WelcomePageText: View {
                 (page.continueButton ?? continueButton)
                     .frame(minWidth: 160)
             }
-            .buttonStyle(.glassProminent)
+            .introButtonStyle(prominent: true, reducesTransparency: reducesTransparency)
             .controlSize(.large)
             .welcomeDefaultAction(isRevealed)
             .disabled(!isRevealed || !isEnabled)
@@ -65,6 +67,8 @@ struct WelcomePageText: View {
 
 /// The last page: one line at the center, and the button that begins.
 struct WelcomeReadyText: View {
+    @Environment(\.accessibilityReduceTransparency) private var reducesTransparency
+
     let index: Int
     let pageCount: Int
     let title: Text
@@ -84,7 +88,7 @@ struct WelcomeReadyText: View {
                 button
                     .frame(minWidth: 160)
             }
-            .buttonStyle(.glassProminent)
+            .introButtonStyle(prominent: true, reducesTransparency: reducesTransparency)
             .controlSize(.large)
             .welcomeDefaultAction(isRevealed)
             .disabled(!isRevealed || !isEnabled)

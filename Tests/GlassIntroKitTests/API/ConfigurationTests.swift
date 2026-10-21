@@ -31,6 +31,13 @@ import Testing
         #expect(reveal.wordStarts.isEmpty && reveal.blackStart < 0.5)
     }
 
+    @Test func skipButtonShowsUnlessTurnedOff() {
+        let pages: [GlassIntroPage] = [.greeting("A", message: "a")]
+        #expect(GlassIntro(appName: "Orbit", pages: pages).showsSkipButton)
+        #expect(!GlassIntro(appName: "Orbit", pages: pages, showsSkipButton: false).showsSkipButton)
+        #expect(Bundle.module.localizedString(forKey: "Skip", value: nil, table: nil) == "Skip")
+    }
+
     @Test func welcomeScheduleAndStorage() throws {
         let suite = "GlassIntroKitTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))

@@ -10,6 +10,12 @@
     "Let's Begin": {
 
     },
+    "Skip": {
+
+    },
+    "Skips the welcome. It won't show again.": {
+
+    },
     "Page %lld of %lld": {
       "localizations": {
         "en": {

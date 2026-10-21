@@ -28,14 +28,23 @@ nonisolated enum LaunchPresentationPhase: Int, CaseIterable, Sendable {
 nonisolated struct LaunchWorkspacePresentation: Equatable, Sendable {
     let phase: LaunchPresentationPhase
     let reducesMotion: Bool
+    /// With Reduce Transparency on, nothing behind the window shows
+    /// through: the mark rests on a solid surface instead of frosted glass.
+    var reducesTransparency = false
 
     /// The solid surface that hides the workspace until the stage closes.
     var workspaceCoverOpacity: Double {
         phase.rawValue >= LaunchPresentationPhase.logo.rawValue ? 0 : 1
     }
 
-    /// The frosted layer the mark rests on: the workspace is already in
-    /// place beneath it, and it clears as the mark dissolves.
+    /// Whether the surface the mark rests on is solid rather than frosted
+    /// glass.
+    var restsOnSolidSurface: Bool {
+        reducesTransparency
+    }
+
+    /// The surface the mark rests on, frosted glass or solid: the workspace
+    /// is already in place beneath it, and it clears as the mark dissolves.
     var frostedGlassOpacity: Double {
         guard !reducesMotion else {
             return 0

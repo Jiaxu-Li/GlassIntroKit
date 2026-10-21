@@ -66,6 +66,7 @@ private struct GlassIntroRun {
 
 private struct GlassIntroModifier: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var accessibilityReduceTransparency
 
     let intro: GlassIntro
     let isPresented: Binding<Bool>?
@@ -74,11 +75,13 @@ private struct GlassIntroModifier: ViewModifier {
     @State private var phase = LaunchPresentationPhase.complete
     @State private var runCount = 0
     @State private var skipRequest = 0
+    @State private var isWelcomePlaying = false
 
     func body(content: Content) -> some View {
         let presentation = LaunchWorkspacePresentation(
             phase: phase,
-            reducesMotion: accessibilityReduceMotion
+            reducesMotion: accessibilityReduceMotion,
+            reducesTransparency: accessibilityReduceTransparency
         )
         let isRunning = run != nil
 
@@ -94,13 +97,31 @@ private struct GlassIntroModifier: ViewModifier {
                             presentsWelcome: run.presentsWelcome,
                             skipRequest: skipRequest,
                             phase: $phase,
+                            isWelcomePlaying: $isWelcomePlaying,
                             onCompletion: complete
                         )
                         .id(run.id)
                     }
                     .ignoresSafeArea()
+                    // VoiceOver's escape gesture skips, as Escape does on a
+                    // Mac.
+                    .accessibilityAction(.escape) {
+                        skipRequest &+= 1
+                    }
                 }
             }
+            .overlay(alignment: .topTrailing) {
+                // Inside the safe area, clear of the status bar and the
+                // window's title bar.
+                if isRunning, isWelcomePlaying, intro.showsSkipButton {
+                    IntroSkipButton(label: intro.skipButton) {
+                        skipRequest &+= 1
+                    }
+                    .padding(16)
+                    .transition(.opacity)
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: isWelcomePlaying)
             .background {
                 if isRunning {
                     Rectangle()
@@ -122,6 +143,7 @@ private struct GlassIntroModifier: ViewModifier {
                 }
                 start(mode: .full, presentsWelcome: intro.welcome != .never && !intro.pages.isEmpty)
             }
+            .onDisappear(perform: abandon)
     }
 
     private func workspace(
@@ -161,6 +183,22 @@ private struct GlassIntroModifier: ViewModifier {
         }
     }
 
+    /// The view went away mid-intro, as when its window closes. The launch
+    /// is given up rather than completed, so the next window plays it from
+    /// the start, and a replay is not left half on.
+    private func abandon() {
+        guard let run else {
+            return
+        }
+        if isPresented == nil, run.mode == .full {
+            LaunchProcessState.shared.abandonSequence()
+        }
+        self.run = nil
+        phase = .complete
+        isWelcomePlaying = false
+        isPresented?.wrappedValue = false
+    }
+
     private func complete() {
         if isPresented == nil {
             LaunchProcessState.shared.completeSequence()
@@ -170,6 +208,7 @@ private struct GlassIntroModifier: ViewModifier {
         withTransaction(transaction) {
             phase = .complete
             run = nil
+            isWelcomePlaying = false
         }
         isPresented?.wrappedValue = false
     }

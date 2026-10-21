@@ -31,6 +31,12 @@ struct ContentView: View {
 }
 ```
 
+### Skipping and interruptions
+
+A Skip button shows in the corner while the welcome plays, on iOS and macOS. ``GlassIntro/showsSkipButton`` hides it and ``GlassIntro/skipButton`` relabels it. Escape skips on a Mac, and VoiceOver's escape gesture skips everywhere.
+
+Playing the welcome through, or skipping it, records it as seen. An interruption doesn't: if the app is quit mid-welcome, it plays again at the next launch; if its window is closed mid-intro on macOS, the next window plays it from the start. Moving to the background and back, the intro carries on.
+
 ### How the launch opens
 
 By default the launch opens straight on the mark. ``GlassIntro/Opening/stage`` draws the opening stage first: rings and lines in the ``GlassIntro/tint`` colour, then white spreading across the window and closing onto the mark. ``GlassIntro/playsLaunchAnimation`` turns the launch off when there is no welcome to show.
@@ -42,9 +48,10 @@ A picture fits a window that changes size while it moves, and is laid out again 
 ### Accessibility
 
 - With Reduce Motion on, the launch fades instead of animating, and each page appears finished.
+- With Reduce Transparency on, the mark rests on a solid surface instead of frosted glass, each page shows one solid colour, and the buttons are opaque. The two settings work together.
 - Return continues on the page on screen.
-- On macOS, Escape skips the launch.
-- Page indicators carry VoiceOver labels.
+- On macOS, Escape skips; VoiceOver's escape gesture skips everywhere.
+- Page indicators and the Skip button carry VoiceOver labels.
 
 ## See Also
 
