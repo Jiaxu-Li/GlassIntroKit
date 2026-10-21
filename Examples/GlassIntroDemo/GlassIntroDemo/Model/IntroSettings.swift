@@ -42,6 +42,7 @@ final class IntroSettings {
     var startTitle = ""
     var startButton = ""
     var continueButton = ""
+    var showsSkipButton = true
 
     static let markSymbols = [
         "sparkles", "globe.americas.fill", "leaf.fill", "bolt.fill", "star.fill",
@@ -94,6 +95,7 @@ final class IntroSettings {
             startTitle: startTitle.isEmpty ? nil : Text(verbatim: startTitle),
             startButton: startButton.isEmpty ? nil : Text(verbatim: startButton),
             continueButton: continueButton.isEmpty ? nil : Text(verbatim: continueButton),
+            showsSkipButton: showsSkipButton,
             welcome: .everyLaunch,
             opening: opening
         )

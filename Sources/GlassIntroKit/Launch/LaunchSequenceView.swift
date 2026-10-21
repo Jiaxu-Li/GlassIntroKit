@@ -22,6 +22,7 @@ import AppKit
 /// its part from it, so the content is never rebuilt by the launch.
 struct LaunchSequenceView: View {
     @Environment(\.accessibilityReduceMotion) private var accessibilityReduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var accessibilityReduceTransparency
 
     let intro: GlassIntro
     let mode: LaunchSequenceMode
@@ -33,6 +34,8 @@ struct LaunchSequenceView: View {
     /// Incremented to skip the launch.
     let skipRequest: Int
     @Binding var phase: LaunchPresentationPhase
+    /// Whether the welcome is on screen, for the Skip button.
+    @Binding var isWelcomePlaying: Bool
     let onCompletion: @MainActor () -> Void
 
     @State private var stage: OpeningStageProperties
@@ -50,6 +53,7 @@ struct LaunchSequenceView: View {
         presentsWelcome: Bool,
         skipRequest: Int,
         phase: Binding<LaunchPresentationPhase>,
+        isWelcomePlaying: Binding<Bool>,
         onCompletion: @escaping @MainActor () -> Void
     ) {
         self.intro = intro
@@ -58,6 +62,7 @@ struct LaunchSequenceView: View {
         self.presentsWelcome = presentsWelcome
         self.skipRequest = skipRequest
         _phase = phase
+        _isWelcomePlaying = isWelcomePlaying
         self.onCompletion = onCompletion
         // Opening on the mark, the very first frame is already the closed
         // stage, with the mark still to come up: the launch colour never
@@ -70,7 +75,8 @@ struct LaunchSequenceView: View {
     var body: some View {
         let presentation = LaunchWorkspacePresentation(
             phase: phase,
-            reducesMotion: accessibilityReduceMotion
+            reducesMotion: accessibilityReduceMotion,
+            reducesTransparency: accessibilityReduceTransparency
         )
 
         ZStack {
@@ -91,7 +97,8 @@ struct LaunchSequenceView: View {
                     content: WelcomeContent(intro),
                     canvasSize: canvasSize,
                     reducesMotion: accessibilityReduceMotion,
-                    onFinish: finishWelcome
+                    reducesTransparency: accessibilityReduceTransparency,
+                    onFinish: { finishWelcome(.finished) }
                 )
             }
         }
@@ -104,6 +111,12 @@ struct LaunchSequenceView: View {
         }
         .onChange(of: skipRequest) {
             skipSequence()
+        }
+        .onDisappear {
+            // Gone before the welcome ended: it isn't recorded, and plays
+            // again the next time it would. The sequence's task is
+            // cancelled; the welcome it waits for lets it go.
+            finishWelcome(.interrupted)
         }
     }
 
@@ -124,7 +137,7 @@ struct LaunchSequenceView: View {
             .allowsHitTesting(false)
             .accessibilityHidden(true)
 
-        LaunchFrostedGlass()
+        LaunchFrostedGlass(isSolid: presentation.restsOnSolidSurface, solid: intro.background)
             .opacity(presentation.frostedGlassOpacity)
             .animation(.smooth(duration: 0.50), value: presentation.frostedGlassOpacity)
             .allowsHitTesting(false)
@@ -174,7 +187,7 @@ struct LaunchSequenceView: View {
             _ = advance(to: .handoffApproach)
             // The mark and the frosted glass clear together, softly, and the
             // app is handed over once they have actually gone.
-            await animateStageUntilSettled(.timingCurve(0.3, 0, 0.15, 1, duration: 0.62)) {
+            await animateStageUntilSettled(.timingCurve(0.3, 0, 0.15, 1, duration: 0.62), lasting: 0.62) {
                 $0.dissolvesMark = true
             }
             try Task.checkCancellation()
@@ -219,15 +232,26 @@ struct LaunchSequenceView: View {
         }
     }
 
+    /// Animates the stage and returns once the animation has finished, or
+    /// a little after it should have: an animation's completion can be
+    /// late, or never come, while the app is in the background, and the
+    /// launch must not wait on it forever.
     private func animateStageUntilSettled(
         _ animation: Animation,
+        lasting duration: Double,
         _ change: (inout OpeningStageProperties) -> Void
     ) async {
+        let resumption = Resumption()
         await withCheckedContinuation { continuation in
+            resumption.continuation = continuation
             withAnimation(animation, completionCriteria: .logicallyComplete) {
                 change(&stage)
             } completion: {
-                continuation.resume()
+                resumption.resume()
+            }
+            Task {
+                try? await Task.sleep(for: .seconds(duration + 0.5))
+                resumption.resume()
             }
         }
     }
@@ -258,17 +282,19 @@ struct LaunchSequenceView: View {
         await withCheckedContinuation { continuation in
             welcomeContinuation = continuation
             isPresentingWelcome = true
+            isWelcomePlaying = true
         }
     }
 
-    /// Records the welcome as shown, whether it was continued past or
-    /// skipped while it played, so it does not return.
-    private func finishWelcome() {
+    /// Ends the welcome and records it as the outcome says: played through
+    /// or skipped, it does not return; interrupted, it plays again.
+    private func finishWelcome(_ outcome: WelcomeOutcome) {
         guard isPresentingWelcome else {
             return
         }
-        intro.storage.hasSeenWelcome = true
+        intro.record(outcome)
         isPresentingWelcome = false
+        isWelcomePlaying = false
         welcomeContinuation?.resume()
         welcomeContinuation = nil
     }
@@ -277,7 +303,7 @@ struct LaunchSequenceView: View {
         guard !hasCompleted else {
             return
         }
-        finishWelcome()
+        finishWelcome(.skipped)
         sequenceGeneration &+= 1
         settleAtCompletePhase()
         completeSequence()
@@ -324,15 +350,35 @@ private struct LaunchBehindWindowGlass: NSViewRepresentable {
 }
 #endif
 
-/// The frosted layer the mark rests on: the blurred desktop behind the
-/// window on macOS, and blurred content elsewhere.
+/// What the mark rests on: frosted glass, which is the blurred desktop
+/// behind the window on macOS and blurred content elsewhere, or with Reduce
+/// Transparency on, a solid surface.
 private struct LaunchFrostedGlass: View {
+    let isSolid: Bool
+    let solid: Color
+
     var body: some View {
-        #if os(macOS)
-        LaunchBehindWindowGlass()
-        #else
-        Rectangle()
-            .fill(.regularMaterial)
-        #endif
+        if isSolid {
+            Rectangle()
+                .fill(solid)
+        } else {
+            #if os(macOS)
+            LaunchBehindWindowGlass()
+            #else
+            Rectangle()
+                .fill(.regularMaterial)
+            #endif
+        }
+    }
+}
+
+/// Resumes a continuation once, whichever of several callers comes first.
+@MainActor
+private final class Resumption {
+    var continuation: CheckedContinuation<Void, Never>?
+
+    func resume() {
+        continuation?.resume()
+        continuation = nil
     }
 }

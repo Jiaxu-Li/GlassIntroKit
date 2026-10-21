@@ -43,6 +43,9 @@ extension IntroSettings {
         if !continueButton.isEmpty {
             options.append("continueButton: Text(\(quoted(continueButton)))")
         }
+        if !showsSkipButton {
+            options.append("showsSkipButton: false")
+        }
         if opening == .stage {
             options.append("opening: .stage")
         }

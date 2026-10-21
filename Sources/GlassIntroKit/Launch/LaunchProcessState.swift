@@ -44,6 +44,16 @@ final class LaunchProcessState {
     func completeSequence() {
         status = .completed
     }
+
+    /// Gives up a sequence that was claimed but never finished, as when its
+    /// window closes mid-intro, so the next window to ask plays it from the
+    /// start.
+    func abandonSequence() {
+        guard status == .presenting else {
+            return
+        }
+        status = .ready
+    }
 }
 
 /// How a window presents the launch: played in full, or settled at once.

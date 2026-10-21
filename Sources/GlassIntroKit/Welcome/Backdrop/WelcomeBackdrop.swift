@@ -17,6 +17,10 @@ struct BackdropStyle {
     let points: [SIMD2<Float>]
     let colors: [Color]
     let image: Image?
+    /// What shows instead with Reduce Transparency on: one dark, solid
+    /// colour from the same light, which white text and buttons read
+    /// clearly against.
+    let solid: Color
 
     /// The style for a page with `background`, turned to `picture`.
     init(_ background: GlassIntroBackground, picture: IntroPicture) {
@@ -25,16 +29,22 @@ struct BackdropStyle {
         case .automatic:
             self.init(points: palette.points, colors: palette.colors, image: nil)
         case .color(let color):
-            self.init(points: WelcomeBackdrop.nightPoints, colors: WelcomeBackdrop.colors(around: color), image: nil)
+            self.init(
+                points: WelcomeBackdrop.nightPoints,
+                colors: WelcomeBackdrop.colors(around: color),
+                image: nil,
+                solid: WelcomeBackdrop.solid(around: color)
+            )
         case .image(let image):
             self.init(points: palette.points, colors: palette.colors, image: image)
         }
     }
 
-    init(points: [SIMD2<Float>], colors: [Color], image: Image?) {
+    init(points: [SIMD2<Float>], colors: [Color], image: Image?, solid: Color? = nil) {
         self.points = points
         self.colors = colors
         self.image = image
+        self.solid = solid ?? WelcomeBackdrop.solid(from: colors)
     }
 }
 
@@ -44,10 +54,33 @@ struct WelcomeBackdrop: View {
     let styles: [BackdropStyle]
     var page = 0
     var reducesMotion = false
+    var reducesTransparency = false
 
     var body: some View {
-        let style = styles.isEmpty ? nil : styles[min(max(page, 0), styles.count - 1)]
+        if reducesTransparency {
+            solidBackdrop
+        } else {
+            lightBackdrop
+        }
+    }
+
+    /// One solid colour per page, crossfading as the pages turn.
+    private var solidBackdrop: some View {
         ZStack {
+            Rectangle()
+                .fill(styles.first?.solid ?? Self.solid(from: Self.oceanColors))
+            ForEach(styles.indices, id: \.self) { index in
+                Rectangle()
+                    .fill(styles[index].solid)
+                    .opacity(index == page ? 1 : 0)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private var lightBackdrop: some View {
+        let style = styles.isEmpty ? nil : styles[min(max(page, 0), styles.count - 1)]
+        return ZStack {
             MeshGradient(
                 width: 3,
                 height: 3,
@@ -93,6 +126,18 @@ struct WelcomeBackdrop: View {
         case .rest, .finale:
             (oceanPoints, oceanColors)
         }
+    }
+
+    /// A solid colour from a page's light: its top center, darkened enough
+    /// that white text on it keeps a contrast ratio of at least 7:1.
+    static func solid(from colors: [Color]) -> Color {
+        let base = colors.count > 1 ? colors[1] : (colors.first ?? .black)
+        return base.mix(with: .black, by: 0.35)
+    }
+
+    /// A solid colour in `color`, dark enough for white text.
+    static func solid(around color: Color) -> Color {
+        color.mix(with: .black, by: 0.72)
     }
 
     /// Soft light in `color`: brightest a little above the center, falling

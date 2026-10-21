@@ -53,6 +53,32 @@ import Testing
         }
     }
 
+    /// Reduce Motion and Reduce Transparency, each alone and both together.
+    @Test(arguments: [(false, false), (true, false), (false, true), (true, true)])
+    func accessibilitySettingsCombine(reducesMotion: Bool, reducesTransparency: Bool) {
+        for phase in LaunchPresentationPhase.allCases {
+            let presentation = LaunchWorkspacePresentation(
+                phase: phase,
+                reducesMotion: reducesMotion,
+                reducesTransparency: reducesTransparency
+            )
+            let withoutTransparency = LaunchWorkspacePresentation(phase: phase, reducesMotion: reducesMotion)
+
+            // Reduce Transparency swaps the frosted glass for a solid surface...
+            #expect(presentation.restsOnSolidSurface == reducesTransparency)
+            // ...shown exactly when the glass would have been; with Reduce
+            // Motion, neither shows.
+            let showsSurface = !reducesMotion && (phase == .logo || phase == .settling)
+            #expect(presentation.frostedGlassOpacity == (showsSurface ? 1 : 0))
+            // ...and changes nothing about when the app is covered, usable,
+            // or its window chrome hidden.
+            #expect(presentation.workspaceCoverOpacity == withoutTransparency.workspaceCoverOpacity)
+            #expect(presentation.workspaceOpacity == withoutTransparency.workspaceOpacity)
+            #expect(presentation.isWorkspaceAvailable == withoutTransparency.isWorkspaceAvailable)
+            #expect(presentation.hidesWindowChrome == withoutTransparency.hidesWindowChrome)
+        }
+    }
+
     @Test func settledStageMatchesEachPhase() {
         #expect(OpeningStageProperties.settled(at: .background) == OpeningStageProperties())
         #expect(!OpeningStageProperties.settled(at: .construction).convertToLogo)

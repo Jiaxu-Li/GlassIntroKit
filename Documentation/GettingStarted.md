@@ -14,7 +14,7 @@ In Xcode, choose **File › Add Package Dependencies…** and enter `https://git
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Jiaxu-Li/GlassIntroKit.git", from: "0.1.0"),
+    .package(url: "https://github.com/Jiaxu-Li/GlassIntroKit.git", from: "0.2.0"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["GlassIntroKit"]),

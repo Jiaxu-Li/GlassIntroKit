@@ -1,0 +1,50 @@
+name: Device test report
+description: Share what you saw running the device checklist on real hardware.
+labels: [device-testing]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing on hardware. The checklist is in [Testing on Devices](https://github.com/Jiaxu-Li/GlassIntroKit/blob/main/Documentation/DeviceTesting.md). Mark each check ✓, ✗, or – (not applicable), and describe any ✗ below.
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      placeholder: "iPhone 17 Pro"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System version
+      placeholder: "iOS 26.1"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: GlassIntroKit version
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: input
+    id: display
+    attributes:
+      label: Display refresh rate
+      placeholder: "120 Hz"
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      value: |
+        Look (L1–L4):
+        Motion (M1–M4):
+        Accessibility (A1–A6):
+        Skipping and interruptions (S1–S7):
+    validations:
+      required: true
+  - type: textarea
+    id: problems
+    attributes:
+      label: Problems
+      description: For each ✗, what you saw. Attach a screen recording if you can.

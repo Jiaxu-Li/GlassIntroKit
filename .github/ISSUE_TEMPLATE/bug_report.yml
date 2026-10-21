@@ -1,0 +1,85 @@
+name: Bug report
+description: Something doesn't look or work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. A screen recording and the exact device and system make a visual problem much faster to find.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest steps that show it. Include your `.glassIntro(...)` call and the pages involved, or say which demo settings you used.
+      placeholder: |
+        1. Run the demo with the default settings
+        2. Press Play
+        3. On the scene page, …
+    validations:
+      required: true
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or screen recording
+      description: For anything visual, attach a recording. Drag the file here.
+  - type: input
+    id: version
+    attributes:
+      label: GlassIntroKit version
+      description: The release, or the commit if you use a branch.
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS
+        - iPadOS
+        - macOS
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System version
+      placeholder: "iOS 26.1"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device
+      description: The model, and whether it is a real device or the Simulator.
+      placeholder: "iPhone 17 Pro (device)"
+    validations:
+      required: true
+  - type: checkboxes
+    id: settings
+    attributes:
+      label: Settings that were on
+      options:
+        - label: Reduce Motion
+        - label: Reduce Transparency
+        - label: Increase Contrast
+        - label: VoiceOver
+        - label: Larger Text
+        - label: Dark Mode
+  - type: input
+    id: xcode
+    attributes:
+      label: Xcode version
+      placeholder: "Xcode 26.1"
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else
+      description: Logs, a crash report, or what you have already tried.

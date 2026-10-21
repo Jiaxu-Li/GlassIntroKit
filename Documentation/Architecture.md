@@ -49,10 +49,6 @@ swift run --package-path Documentation/Tools/Diagrams
 
 ## Screenshots and video
 
-The screenshots and the video are recordings of the demo app — the Simulator's with `xcrun simctl io booted recordVideo`, the Mac window's with `screencapture -v` — put in Apple's device frames by `Tools/Framing`. The frames are not in the repository; download the iPhone 18 Pro and MacBook Pro 14-inch bezels from [Apple Design Resources](https://developer.apple.com/design/resources/), export them as PNGs into one folder, and run:
+The screenshots and the video are recordings of the demo app, put in Apple's device frames by `Tools/Framing`. [Making the Preview Video](PreviewVideo.md) walks through it.
 
-```sh
-swift run -c release --package-path Documentation/Tools/Framing Framing <bezels> <recordings> <output>
-```
-
-`<recordings>` holds `ios.mov`, `mac.mov`, and `timing.json`, which says when the intro starts in each recording, when to take each screenshot, and, as `macCleanFrom`, the first moment the Mac recording shows only the window — a capture starts before the window settles, so earlier moments would show the desktop. Copy what it writes into `Sources/GlassIntroKit/GlassIntroKit.docc/Resources`, then redraw the diagrams, since some of them use the screenshots.
+See also [SwiftUI and Metal](SwiftUIAndMetal.md) for which part draws what.

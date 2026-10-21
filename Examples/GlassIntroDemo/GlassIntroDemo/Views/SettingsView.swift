@@ -99,6 +99,7 @@ struct SettingsView: View {
                 TextField("Last Page Title", text: $settings.startTitle, prompt: Text("Let's Begin"))
                 TextField("Last Page Button", text: $settings.startButton, prompt: Text("Get Started"))
                 TextField("Continue Button", text: $settings.continueButton, prompt: Text("Continue"))
+                Toggle("Skip Button", isOn: $settings.showsSkipButton)
             } header: {
                 Text("Words")
             } footer: {

@@ -27,6 +27,9 @@ struct WelcomeView: View {
     let content: WelcomeContent
     let canvasSize: CGSize
     let reducesMotion: Bool
+    /// Shows each page's light as one solid colour, with no blur or
+    /// picture behind the text.
+    var reducesTransparency = false
     let onFinish: @MainActor () -> Void
 
     @State var player: WelcomePlayer?
@@ -129,9 +132,19 @@ struct WelcomeView: View {
     }
 
     /// Each page's light, the picture rising out of the black at the start.
+    @ViewBuilder
     private var backdrop: some View {
         let styles = content.backdropStyles
-        return ZStack {
+        if reducesTransparency {
+            WelcomeBackdrop(styles: styles, page: backdropPage, reducesMotion: reducesMotion, reducesTransparency: true)
+                .opacity(pictureOpacity)
+        } else {
+            blurredBackdrop(styles)
+        }
+    }
+
+    private func blurredBackdrop(_ styles: [BackdropStyle]) -> some View {
+        ZStack {
             WelcomeBackdrop(styles: styles, page: backdropPage, reducesMotion: reducesMotion)
                 .scaleEffect(pictureScale)
                 .blur(radius: reducesMotion ? 0 : pictureBlur)
