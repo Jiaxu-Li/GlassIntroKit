@@ -12,7 +12,7 @@
   <a href="#requirements"><img src="https://img.shields.io/badge/macOS-26%2B-0A84FF?logo=apple&logoColor=white" alt="macOS 26+"></a>
   <a href="#installation"><img src="https://img.shields.io/badge/SwiftPM-compatible-34C759" alt="SwiftPM"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue" alt="License: Apache 2.0"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.1.0-5E5CE6" alt="Version 0.1.0"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-0.2.0-5E5CE6" alt="Version 0.2.0"></a>
 </p>
 
 </div>
@@ -53,14 +53,14 @@ The launch opens on your mark on frosted glass. On the first launch a welcome fo
 - **Eight pictures, any order.** A greeting, the mark, scattered symbols, a live Metal scene, a graph, falling nodes, an app icon, and cards with your own views. Every pair joins without a jump.
 - **Yours to shape.** Graphs of your own nodes and wires, scenes in your shape, colour, and motion, a RealityKit or SwiftUI view through the lens, backgrounds, buttons, and the words of the ending.
 - **Tested frame by frame.** The tests play every page after every other page and fail on any frame that jumps.
-- **Accessible.** Reduce Motion, keyboard, and VoiceOver support.
+- **Accessible.** Reduce Motion, Reduce Transparency, a Skip button on every platform, keyboard, and VoiceOver support.
 - **No dependencies, no network.** It stores one Boolean to remember that the welcome was shown.
 
 ## Requirements
 
 | | |
 |---|---|
-| Version | 0.1.0 |
+| Version | 0.2.0 |
 | Platforms | iOS 26 or later, macOS 26 or later |
 | Swift | 6.3 or later, Swift 6 language mode |
 | Tested with | Xcode 27, Swift 6.4 |
@@ -78,7 +78,7 @@ Choose **File › Add Package Dependencies…**, enter `https://github.com/Jiaxu
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Jiaxu-Li/GlassIntroKit.git", from: "0.1.0"),
+    .package(url: "https://github.com/Jiaxu-Li/GlassIntroKit.git", from: "0.2.0"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["GlassIntroKit"]),
@@ -314,6 +314,22 @@ struct ContentView: View {
 }
 ```
 
+### Skipping and interruptions
+
+A Skip button shows in the corner while the welcome plays, on iOS and macOS; `showsSkipButton: false` hides it and `skipButton` relabels it. Escape skips on a Mac, and VoiceOver's escape gesture skips everywhere.
+
+Whether the welcome counts as seen depends on how it ended:
+
+| How it ended | Recorded as seen | What happens next |
+|---|---|---|
+| The last page's button, and the ending played | Yes | With `.firstLaunchOnly`, it doesn't play again |
+| The Skip button, Escape, or the VoiceOver escape gesture | Yes | With `.firstLaunchOnly`, it doesn't play again |
+| The app went to the background and came back | — | The intro carries on |
+| The app was quit, or crashed, mid-welcome | No | It plays again, from the start, at the next launch |
+| Its window was closed mid-intro (macOS) | No | The next window to open plays it from the start |
+
+A replay with `isPresented` follows the same rules, and its binding is set back to false however it ends.
+
 ### How the launch opens
 
 By default the launch opens straight on the mark. `opening: .stage` draws the opening stage first: rings and lines in the `tint` colour, white spreading across the window, closing onto the mark. `playsLaunchAnimation: false` skips the launch when there is no welcome to show.
@@ -335,6 +351,8 @@ A picture fits a window that changes size while it moves, and is laid out again 
 | `startTitle` | "Let's Begin" | The last page's line |
 | `startButton` | "Get Started" | The last page's button |
 | `continueButton` | "Continue" | The button on every other page |
+| `showsSkipButton` | `true` | Whether a Skip button shows while the welcome plays |
+| `skipButton` | "Skip" | The Skip button's label |
 | `tint` | `.accentColor` | The opening stage's colour, with `opening: .stage` |
 | `background` | the window background | What the window shows behind the launch |
 | `welcome` | `.firstLaunchOnly` | When the welcome plays |
@@ -353,9 +371,11 @@ The modifiers:
 ## Accessibility, localization, and privacy
 
 - **Reduce Motion.** The launch fades instead of animating, and each page appears finished.
-- **Keyboard.** Return continues on the page on screen; on macOS, Escape skips the launch.
-- **VoiceOver.** Page indicators carry labels; the pictures are decorative and hidden from VoiceOver.
-- **Localization.** The built-in text — "Continue", "Let's Begin", "Get Started", and the page labels — is in English; `continueButton(_:)`, `startTitle`, and `startButton` take your own. Page titles and messages are `LocalizedStringKey`s, localized from your app's string catalog.
+- **Reduce Transparency.** The mark rests on a solid surface instead of frosted glass, every page shows one solid colour instead of its light or picture, and the buttons are opaque, so text and buttons stay clear. Each colour keeps a contrast of at least 7:1 with the white text; a test checks it. The two settings work together.
+- **Skipping.** A Skip button in the corner, on iOS and macOS. See [Skipping and interruptions](#skipping-and-interruptions).
+- **Keyboard.** Return continues on the page on screen; on macOS, Escape skips.
+- **VoiceOver.** Page indicators and the Skip button carry labels; the escape gesture skips; the pictures are decorative and hidden from VoiceOver.
+- **Localization.** The built-in text — "Continue", "Let's Begin", "Get Started", "Skip", and the page labels — is in English; `continueButton(_:)`, `startTitle`, `startButton`, and `skipButton` take your own. Page titles and messages are `LocalizedStringKey`s, localized from your app's string catalog.
 - **Privacy.** No network requests. One Boolean in `UserDefaults`, or in the `GlassIntroStorage` you give.
 - **SF Symbols.** Symbols are traced into glass outlines. Some SF Symbols may only refer to particular Apple products and must not be modified; the SF Symbols app marks them. Don't pass those to a page. The default symbols may be used by anyone, and a test checks them.
 
@@ -384,6 +404,9 @@ On the Mac, the window opens at a comfortable size, the intro fits it as you res
 | [The Ending and the Mark](Documentation/Ending.md) | The words after the last page, the buttons, the mark |
 | [Playing the Intro](Documentation/Playing.md) | When it plays, replaying it, storage, windows |
 | [Architecture](Documentation/Architecture.md) | How the kit is built, for contributors |
+| [SwiftUI and Metal](Documentation/SwiftUIAndMetal.md) | Which part draws what |
+| [Testing on Devices](Documentation/DeviceTesting.md) | What to check on real hardware, and a form to record it |
+| [Making the Preview Video](Documentation/PreviewVideo.md) | How the screenshots and video are made |
 
 The DocC catalog has the same guides, the API reference, and an interactive tutorial. In Xcode, choose **Product › Build Documentation**.
 
@@ -407,6 +430,8 @@ The tests play every page after every other page, random welcomes, every graph s
 **Can I use my own 3D content?** Yes: `.scene(_:message:content:)` shows any view, such as a `RealityView`, through the lens.
 
 **Can I leave out the words at the end?** Yes: `finale: []`.
+
+**Can people skip it?** Yes, with the Skip button on iOS and macOS, Escape on a Mac, or VoiceOver's escape gesture. Skipping counts as seeing it. To hide the button, pass `showsSkipButton: false`.
 
 **Does it work in a window that changes size?** Yes, on iOS and macOS. A picture is fitted while it moves and laid out again once at rest.
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0
+
+Accessibility and skipping, from community feedback.
+
+- **Reduce Transparency.** With it on, the mark rests on a solid surface instead of frosted glass, every page shows one solid colour instead of its light or picture, and the buttons are opaque. Each colour keeps a contrast of at least 7:1 with the white text. It works alone and together with Reduce Motion.
+- **Skip button.** A Skip button shows in the corner while the welcome plays, on iOS and macOS, not only Escape on a Mac. `showsSkipButton: false` hides it; `skipButton` relabels it. VoiceOver's escape gesture skips too.
+- **Skipping and interruptions, defined.** Playing the welcome through or skipping it records it as seen. Quitting the app mid-welcome doesn't: it plays again at the next launch. The README's "Skipping and interruptions" table has every case.
+- **Closing a window mid-intro.** On macOS, the next window to open now plays the intro from the start. Before, it showed the app straight away and left the welcome for the next launch.
+- **No hang in the background.** The launch no longer waits forever on an animation that doesn't report finishing while the app is in the background.
+- **Tests.** Every combination of Reduce Motion and Reduce Transparency, the skip and interruption rules, closing a window mid-intro, and the contrast of every solid colour.
+- **Documentation.** New guides: SwiftUI and Metal, Testing on Devices with a checklist and a form, and Making the Preview Video. The bug report is now a form asking for the device, system, version, and settings, and there is a template for device test reports.
+- **Demo.** A Skip Button setting.
+
 ## 0.1.0
 
 First release.
