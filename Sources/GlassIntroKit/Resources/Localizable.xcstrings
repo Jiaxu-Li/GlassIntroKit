@@ -13,7 +13,7 @@
     "Skip": {
 
     },
-    "Skips the welcome. It won't show again.": {
+    "Skips the welcome and opens the app.": {
 
     },
     "Page %lld of %lld": {

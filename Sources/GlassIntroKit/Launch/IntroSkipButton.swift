@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 import SwiftUI
 
 /// The button in the corner that skips the welcome, on every platform.
@@ -31,6 +30,6 @@ struct IntroSkipButton: View {
         .controlSize(.regular)
         // The welcome is always dark, whatever the app's appearance.
         .environment(\.colorScheme, .dark)
-        .accessibilityHint(Text("Skips the welcome. It won't show again.", bundle: .module))
+        .accessibilityHint(Text("Skips the welcome and opens the app.", bundle: .module))
     }
 }
